@@ -45,6 +45,7 @@ def get_dual_listed_stocks():
     
     return pd.concat([dual_listed, pd.DataFrame(known_dual)], ignore_index=True).drop_duplicates()
 
+@st.cache_data(ttl=3600)  # Cache for 1 hour
 def get_stock_history(code, market):
     try:
         if market == 'A':
@@ -58,10 +59,9 @@ def get_stock_history(code, market):
                 '成交量': 'volume'
             })
         else:
-            try:
-                df = ak.stock_hk_hist(symbol=code, period="daily", start_date=start_date,end_date=end_date, adjust="")
-            except:
-                print(f"获取港股数据失败: {str(e)}")
+            
+            df = ak.stock_hk_hist(symbol=code, period="daily", start_date=start_date,end_date=end_date, adjust="")
+            
         
         df = df.rename(columns={
                     '日期': 'date',
